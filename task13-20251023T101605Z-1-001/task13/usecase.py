@@ -1,27 +1,58 @@
-def max_score(cards, i, j, memo):
-    if i > j:
-        return 0
-    if (i, j) in memo:
-        return memo[(i, j)]
+# plotting_probabilities.py
 
-    # Choose the first card
-    pick_first = cards[i] + min(
-        max_score(cards, i+2, j, memo),   # Opponent picks i+1
-        max_score(cards, i+1, j-1, memo)  # Opponent picks j
-    )
-    # Choose the last card
-    pick_last = cards[j] + min(
-        max_score(cards, i+1, j-1, memo),  # Opponent picks i
-        max_score(cards, i, j-2, memo)     # Opponent picks j-1
-    )
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm, binom
 
-    memo[(i, j)] = max(pick_first, pick_last)
-    return memo[(i, j)]
+def plot_normal_distribution(mean=0, std_dev=1):
+    """Plots a Normal Distribution Curve"""
+    x = np.linspace(mean - 4*std_dev, mean + 4*std_dev, 1000)
+    y = norm.pdf(x, mean, std_dev)
 
-# Example usage
-cards = [3, 9, 1, 2]
-memo = {}
-max_points = max_score(cards, 0, len(cards)-1, memo)
+    plt.figure(figsize=(8, 5))
+    plt.plot(x, y, color='blue', label=f'N({mean}, {std_dev}²)')
+    plt.title("Normal Distribution")
+    plt.xlabel("x")
+    plt.ylabel("Probability Density")
+    plt.grid(True)
+    plt.legend()
+    plt.show()
 
-print("Card sequence:", cards)
-print("Maximum points player 1 can achieve:", max_points)
+
+def plot_binomial_distribution(n=10, p=0.5):
+    """Plots a Binomial Distribution"""
+    x = np.arange(0, n + 1)
+    y = binom.pmf(x, n, p)
+
+    plt.figure(figsize=(8, 5))
+    plt.bar(x, y, color='orange', alpha=0.7, label=f'Binomial(n={n}, p={p})')
+    plt.title("Binomial Distribution")
+    plt.xlabel("Number of Successes")
+    plt.ylabel("Probability")
+    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.legend()
+    plt.show()
+
+
+def main():
+    print("Select a distribution to plot:")
+    print("1. Normal Distribution")
+    print("2. Binomial Distribution")
+
+    choice = input("Enter your choice (1/2): ")
+
+    if choice == '1':
+        mean = float(input("Enter mean (e.g., 0): "))
+        std_dev = float(input("Enter standard deviation (e.g., 1): "))
+        plot_normal_distribution(mean, std_dev)
+
+    elif choice == '2':
+        n = int(input("Enter number of trials (n): "))
+        p = float(input("Enter probability of success (p): "))
+        plot_binomial_distribution(n, p)
+
+    else:
+        print("Invalid choice. Please enter 1 or 2.")
+
+if __name__ == "__main__":
+    main()
